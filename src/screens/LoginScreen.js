@@ -33,7 +33,7 @@ const LoginScreen = () => {
         <AntDesign name="mail" size={24} color="black" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Email or Username"
           onChangeText={text => setEmail(text)}
           value={email}
           keyboardType="email-address"
@@ -54,7 +54,7 @@ const LoginScreen = () => {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={navigateToSignUp}>
-        <Text style={styles.createAccountText}>Criar uma conta</Text>
+        <Text style={styles.createAccountText}>Create an account</Text>
       </TouchableOpacity>
     </View>
   );

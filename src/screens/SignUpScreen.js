@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import AuthModel from '../models/AuthModel';
 import AuthController from '../controllers/AuthController';
-import CustomAlertModal from '../screens/CustomAlert'; // Importe o novo componente
+import CustomAlertModal from '../screens/Components/CustomAlert'; // Importe o novo componente
 
 const model = new AuthModel();
 const controller = new AuthController();
