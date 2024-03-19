@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Importe o hook useNavigation
+import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons'; // Importe o ícone do AntDesign
 import AuthModel from '../models/AuthModel';
 import AuthController from '../controllers/AuthController';
 
@@ -10,7 +11,7 @@ const controller = new AuthController();
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation(); // Obtenha a função de navegação
+  const navigation = useNavigation();
 
   const handleLogin = () => {
     model.setEmail(email);
@@ -18,13 +19,8 @@ const LoginScreen = () => {
     controller.handleLogin(model);
   };
 
-  
-  const getUsers = () => {
-    controller.getUsers(model);
-  };
-
   const navigateToSignUp = () => {
-    navigation.navigate('SignUpScreen'); // Navegue para a tela de cadastro de usuário
+    navigation.navigate('SignUpScreen');
   };
 
   return (
@@ -33,21 +29,27 @@ const LoginScreen = () => {
         source={require('../../assets/foodapp_logo.png')}
         style={styles.logo}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={text => setEmail(text)}
-        value={email}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        onChangeText={text => setPassword(text)}
-        value={password}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <AntDesign name="mail" size={24} color="black" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={text => setEmail(text)}
+          value={email}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <AntDesign name="lock" size={24} color="black" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={text => setPassword(text)}
+          value={password}
+          secureTextEntry
+        />
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -58,7 +60,6 @@ const LoginScreen = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -71,13 +72,21 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
-  input: {
-    width: '80%',
-    height: 40,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 10,
+    width: '80%', // Ajuste para ocupar 80% da largura
+  },
+  icon: {
+    marginHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
     paddingHorizontal: 10,
   },
   button: {

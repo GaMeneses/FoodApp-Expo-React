@@ -51,28 +51,37 @@ const SignUpScreen = () => {
   return (
     <View style={styles.container}>
       <Image source={require('../../assets/foodapp_logo.png')} style={styles.logo} />
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        onChangeText={text => setUsername(text)}
-        value={username}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={text => setEmail(text)}
-        value={email}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        onChangeText={text => setPassword(text)}
-        value={password}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <AntDesign name="user" size={24} color="black" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          onChangeText={text => setUsername(text)}
+          value={username}
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <AntDesign name="mail" size={24} color="black" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={text => setEmail(text)}
+          value={email}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <AntDesign name="lock" size={24} color="black" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={text => setPassword(text)}
+          value={password}
+          secureTextEntry
+        />
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
@@ -102,13 +111,22 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
-  input: {
-    width: '80%',
-    height: 40,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 10,
+    width: '80%', // Defina a largura da inputContainer para 80% da tela
+  },
+  inputIcon: {
+    marginHorizontal: 10,
+    width: 24, // Defina uma largura fixa para o ícone
+  },
+  input: {
+    flex: 1, // Faça o input ocupar todo o espaço restante
+    height: 40,
     paddingHorizontal: 10,
   },
   button: {
