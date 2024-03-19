@@ -1,30 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Importe o hook useNavigation
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import AuthModel from '../models/AuthModel';
 import AuthController from '../controllers/AuthController';
 
 const model = new AuthModel();
 const controller = new AuthController();
 
-const LoginScreen = () => {
+
+const SignUpScreen = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation(); // Obtenha a função de navegação
 
-  const handleLogin = () => {
+  const handleSignUp = async () => {
+    if (!username || !email || !password) {
+      Alert.alert('Erro', 'Todos os campos são obrigatórios.');
+      return;
+    }
+
+    model.setUsername(username);
     model.setEmail(email);
     model.setPassword(password);
-    controller.handleLogin(model);
-  };
-
-  
-  const getUsers = () => {
-    controller.getUsers(model);
-  };
-
-  const navigateToSignUp = () => {
-    navigation.navigate('SignUpScreen'); // Navegue para a tela de cadastro de usuário
+    const success = await controller.createUser(username, email, password);
+    if (success) {
+      console.log('Usuário criado com sucesso.');
+      // Aqui você pode navegar para outra tela, talvez a tela de login
+    } else {
+      console.log('Erro ao criar usuário.');
+    }
   };
 
   return (
@@ -32,6 +35,13 @@ const LoginScreen = () => {
       <Image
         source={require('../../assets/foodapp_logo.png')}
         style={styles.logo}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        onChangeText={text => setUsername(text)}
+        value={username}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -48,17 +58,13 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={navigateToSignUp}>
-        <Text style={styles.createAccountText}>Criar uma conta</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -91,11 +97,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  createAccountText: {
-    marginTop: 10,
-    color: 'green',
-    textDecorationLine: 'underline',
-  },
 });
 
-export default LoginScreen;
+export default SignUpScreen;

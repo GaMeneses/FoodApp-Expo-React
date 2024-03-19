@@ -1,23 +1,37 @@
 class AuthModel {
-    constructor() {
-      this.email = '';
-      this.password = '';
-    }
-  
-    setEmail(email) {
-      this.email = email;
-    }
-  
-    setPassword(password) {
-      this.password = password;
-    }
-  
-    getCredentials() {
-      return {
-        email: this.email,
-        password: this.password,
-      };
-    }
+  constructor() {
+    this.username = ''; // Adicionando o campo username
+    this.email = '';
+    this.password = '';
   }
-  
-  export default AuthModel;
+
+  setUsername(username) { 
+    this.username = username;
+  }
+
+  setEmail(email) {
+    this.email = email;
+  }
+
+  setPassword(password) {
+    this.password = password;
+  }
+
+  getCredentials() {
+    return {
+      username: this.username, 
+      email: this.email,
+      password: this.password,
+    };
+  }
+
+  getUserData() {
+    return {
+      username: this.username,
+      email: this.email,
+      password: this.password,
+    };
+  }
+}
+
+export default AuthModel;
