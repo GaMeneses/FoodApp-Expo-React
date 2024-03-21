@@ -11,12 +11,18 @@ const controller = new AuthController();
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginFailed, setLoginFailed] = useState(false); // Estado para controlar se o login falhou
   const navigation = useNavigation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     model.setEmail(email);
     model.setPassword(password);
-    controller.handleLogin(model);
+    const success = await controller.handleLogin(model); // Aguarde a conclusão do login
+    if (success) {
+      navigation.navigate('InitialScreen');
+    } else {
+      setLoginFailed(true); // Define loginFailed como true se o login falhou
+    }
   };
 
   const navigateToSignUp = () => {
@@ -29,6 +35,9 @@ const LoginScreen = () => {
         source={require('../../assets/foodapp_logo.png')}
         style={styles.logo}
       />
+      {loginFailed && ( // Renderiza o texto apenas se o login falhar
+        <Text style={styles.errorMessage}>Invalid username or password</Text>
+      )}
       <View style={styles.inputContainer}>
         <AntDesign name="mail" size={24} color="black" style={styles.icon} />
         <TextInput
@@ -104,6 +113,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: 'green',
     textDecorationLine: 'underline',
+  },
+  errorMessage: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
   },
 });
 

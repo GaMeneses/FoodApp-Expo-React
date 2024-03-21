@@ -27,9 +27,7 @@ class AuthController {
       return false; // Retorna falso em caso de erro ao autenticar o usuário
     }
   }
-  
-  
-
+   
   // Função para criar um novo usuário com senha criptografada
   async createUser(username, email, password) {
     try {
