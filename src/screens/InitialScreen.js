@@ -1,42 +1,48 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import FloatingBar from '../screens/Components/FloatingBar'; // Importe o FloatingBar aqui
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, SafeAreaView, Text } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native'; // Importe useFocusEffect aqui
+import FloatingBar from '../screens/Components/FloatingBar';
+import ItemList from '../screens/Components/ItemList';
+import ShoppingListController from '../controllers/ShoppingListController';
+
+const shoppController = new ShoppingListController();
 
 const InitialScreen = () => {
-  // Dados fictícios para a lista de itens
-  const shoppingList = [
-    { id: '1', name: 'Maçãs', quantity: '5 kg' },
-    { id: '2', name: 'Bananas', quantity: '1 dúzia' },
-    { id: '3', name: 'Leite', quantity: '2 litros' },
-    { id: '4', name: 'Pão', quantity: '1 pacote' },
-    { id: '5', name: 'Arroz', quantity: '1 kg' },
-    { id: '6', name: 'Feijão', quantity: '500 g' },
-    { id: '7', name: 'Feijão', quantity: '500 g' },
-    { id: '8', name: 'Feijão', quantity: '500 g' },
-    { id: '9', name: 'Feijão', quantity: '500 g' },
-    { id: '10', name: 'Feijão', quantity: '500 g' },
-  ];
+  const [shoppingList, setShoppingList] = useState([]);
 
-  // Função para renderizar cada item da lista de compras
-  const renderShoppingItem = ({ item }) => {
-    return (
-      <View style={styles.item}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemQuantity}>{item.quantity}</Text>
-      </View>
-    );
+  const loadShoppingList = async () => {
+    try {
+      const items = await shoppController.getAllItems();
+      setShoppingList(items);
+    } catch (error) {
+      console.error('Erro ao carregar lista de compras:', error);
+    }
   };
 
+  // Use useFocusEffect para recarregar a lista sempre que a tela for focada
+  useFocusEffect(() => {
+    loadShoppingList();
+  });
+
   return (
-    <View style={styles.container}>    
+    <View style={styles.container}>
+      <Text style={styles.title}>Lista de Compras</Text>
       <View>
-        <FlatList
-          data={shoppingList}
-          renderItem={renderShoppingItem}
-          keyExtractor={item => item.id}
-        />
+        <SafeAreaView>
+          <FlatList
+            data={shoppingList}
+            renderItem={({ item }) => <ItemList id={item.id} name={item.name} quantity={item.quantity} />}
+            keyExtractor={(item) => item.id.toString()} // Convertendo para string
+            ListHeaderComponent={
+              <View style={styles.listHeader}>
+                <Text style={styles.columnHeader}>Descrição</Text>
+                <Text style={styles.columnHeader}>Quantidade</Text>
+              </View>
+            }
+          />
+        </SafeAreaView>
       </View>
-      <FloatingBar /> 
+      <FloatingBar />
     </View>
   );
 };
@@ -46,20 +52,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 20,
+    paddingHorizontal: 20,
   },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  itemName: {
+  listHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+  },
+  columnHeader: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  itemQuantity: {
-    fontSize: 16,
   },
 });
 

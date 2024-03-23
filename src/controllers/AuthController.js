@@ -1,5 +1,5 @@
 import { generateSalt, verifyPassword } from '../Helpers/Crypto';
-import Database from '../services/DataBase'; // Importe a classe Database
+import Database from '../services/UserDataBase'; // Importe a classe Database
 
 const database = new Database();
 

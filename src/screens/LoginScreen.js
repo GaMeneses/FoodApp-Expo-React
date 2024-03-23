@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons'; // Importe o ícone do AntDesign
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Importe o useFocusEffect
+import { AntDesign } from '@expo/vector-icons';
 import AuthModel from '../models/AuthModel';
 import AuthController from '../controllers/AuthController';
 
@@ -11,17 +11,17 @@ const controller = new AuthController();
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginFailed, setLoginFailed] = useState(false); // Estado para controlar se o login falhou
+  const [loginFailed, setLoginFailed] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
     model.setEmail(email);
     model.setPassword(password);
-    const success = await controller.handleLogin(model); // Aguarde a conclusão do login
+    const success = await controller.handleLogin(model);
     if (success) {
       navigation.navigate('InitialScreen');
     } else {
-      setLoginFailed(true); // Define loginFailed como true se o login falhou
+      setLoginFailed(true);
     }
   };
 
@@ -29,13 +29,22 @@ const LoginScreen = () => {
     navigation.navigate('SignUpScreen');
   };
 
+  // Limpe o estado loginFailed ao sair da tela de login
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setLoginFailed(false);
+      };
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <Image
         source={require('../../assets/foodapp_logo.png')}
         style={styles.logo}
       />
-      {loginFailed && ( // Renderiza o texto apenas se o login falhar
+      {loginFailed && (
         <Text style={styles.errorMessage}>Invalid username or password</Text>
       )}
       <View style={styles.inputContainer}>
@@ -88,7 +97,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 10,
-    width: '80%', // Ajuste para ocupar 80% da largura
+    width: '80%', 
   },
   icon: {
     marginHorizontal: 10,

@@ -1,15 +1,26 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { AntDesign } from '@expo/vector-icons'; // Importe o ícone do AntDesign
+import { AntDesign } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const FloatingBar = () => {
+  const navigation = useNavigation();
+
+  const handleAddItemPress = () => {
+    navigation.navigate('AddItemScreen');
+  };
+
+  const handleHomePress = () => {
+    navigation.navigate('InitialScreen');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleHomePress}>
           <AntDesign name="home" size={32} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleAddItemPress}>
           <AntDesign name="plus" size={32} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
@@ -23,22 +34,22 @@ const FloatingBar = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 20, // Margem inferior para afastar da parte inferior da tela
+    bottom: 20,
     left: 0,
     right: 0,
     backgroundColor: 'transparent',
     zIndex: 1,
-    alignItems: 'center', // Alinha a view ao meio verticalmente
+    alignItems: 'center',
   },
   buttonContainer: {
     width: '80%',
     flexDirection: 'row',
-    paddingHorizontal: 5, // Espaçamento entre os botões
+    paddingHorizontal: 5,
     backgroundColor: '#999',
-    borderRadius: 30, // Aumenta o valor do borderRadius
-    overflow: 'hidden', // Para garantir que os botões não ultrapassem as bordas arredondadas
-    justifyContent: 'space-around', // Distribui os botões igualmente no espaço disponível
-    alignItems: 'center', // Alinha os botões ao centro verticalmente
+    borderRadius: 30,
+    overflow: 'hidden',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   button: {
     width: 60,
