@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ShoppingListController from '../controllers/ShoppingListController';
-import CustomAlertModal from '../screens/Components/CustomAlert'; 
+import CustomAlertModal from '../screens/Components/CustomAlert';
+import FloatingBar from '../screens/Components/FloatingBar';
+import AuthController from '../controllers/AuthController'; // Importe a controller AuthController
 
 const shoppingListController = new ShoppingListController();
+const authController = new AuthController(); // Crie uma instância da AuthController
 
 const AddItemScreen = () => {
   const navigation = useNavigation();
@@ -14,6 +17,7 @@ const AddItemScreen = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [itemId, setItemId] = useState(null);
+  const [userId, setUserId] = useState(null); // Adicione o estado para armazenar o ID do usuário logado
 
   useEffect(() => {
     // Verificar se estamos editando um item existente
@@ -23,7 +27,23 @@ const AddItemScreen = () => {
       // Carregar os detalhes do item para edição
       loadItemDetails(route.params.itemId);
     }
+
+    // Obter o ID do usuário logado ao carregar a tela
+    getCurrentUserId();
   }, []);
+
+  const getCurrentUserId = async () => {
+    try {
+      const currentUser = await authController.getCurrentUser();
+      if (currentUser) {
+        setUserId(currentUser.id); // Armazena o ID do usuário logado no estado
+      } else {
+        console.log('Nenhum usuário logado.');
+      }
+    } catch (error) {
+      console.error('Erro ao obter ID do usuário logado:', error);
+    }
+  };
 
   const loadItemDetails = async (itemId) => {
     try {
@@ -37,17 +57,23 @@ const AddItemScreen = () => {
 
   const handleAddItem = async () => {
     try {
+      // Verificar se o ID do usuário está definido e não é nulo
+      if (!userId) {
+        console.error('ID do usuário não está definido.');
+        return;
+      }
+
       // Convertendo os valores para strings
       const itemNameString = itemName.toString();
       const itemQuantityString = itemQuantity.toString();
-  
+
       // Verificar se estamos criando um novo item ou atualizando um existente
       if (isEditing) {
         // Lógica para atualizar o item existente
         await shoppingListController.updateItem(itemId, itemNameString, itemQuantityString);
       } else {
         // Lógica para adicionar um novo item
-        await shoppingListController.addItem(itemNameString, itemQuantityString);
+        await shoppingListController.addItem(userId, itemNameString, itemQuantityString);
       }
       setShowSuccessModal(true);
       setItemName('');
@@ -91,6 +117,7 @@ const AddItemScreen = () => {
         title="Sucesso"
         message={isEditing ? "Item atualizado com sucesso!" : "Item adicionado com sucesso!"}
       />
+      <FloatingBar />
     </View>
   );
 };

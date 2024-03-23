@@ -1,5 +1,6 @@
 import { generateSalt, verifyPassword } from '../Helpers/Crypto';
 import Database from '../services/UserDataBase'; // Importe a classe Database
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const database = new Database();
 
@@ -19,7 +20,10 @@ class AuthController {
         console.log('Senha incorreta');
         return false; // Retorna falso se a senha estiver incorreta
       }
-  
+      model.id = user.id;
+        // Após o login bem-sucedido, define o usuário atual no AsyncStorage
+        this.setCurrentUser(model); // Armazena o usuário atual
+
       console.log('Usuário autenticado:', model.email);
       return true; // Usuário autenticado com sucesso
     } catch (error) {
@@ -51,6 +55,32 @@ class AuthController {
     } catch (error) {
       console.error('Erro ao autenticar usuário:', error);
       return false; // Erro ao autenticar usuário
+    }
+  }
+
+  async getCurrentUser() {
+    try {
+      const userJson = await AsyncStorage.getItem('currentUser');
+      return userJson ? JSON.parse(userJson) : null;
+    } catch (error) {
+      console.error('Erro ao recuperar usuário atual:', error);
+      return null;
+    }
+  }
+
+  async setCurrentUser(user) {
+    try {
+      await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+    } catch (error) {
+      console.error('Erro ao definir usuário atual:', error);
+    }
+  }
+
+  async clearCurrentUser() {
+    try {
+      await AsyncStorage.removeItem('currentUser');
+    } catch (error) {
+      console.error('Erro ao limpar usuário atual:', error);
     }
   }
 }

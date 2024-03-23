@@ -6,13 +6,15 @@ const dataBaseShoppingList = new ShoppingListDatabase();
 class ShoppingListController {
 
   // Método para adicionar um item à lista de compras
-  async addItem(name, quantity) {
+  async addItem(userId, name, quantity) {
     try {
-      const newItemId = await dataBaseShoppingList.addItem(name, quantity);
-      return newItemId;
+      // Lógica para adicionar um novo item associado ao usuário
+      await dataBaseShoppingList.addItem(userId, name, quantity);
+      console.log('Item adicionado com sucesso:', name);
+      return true; // Item adicionado com sucesso
     } catch (error) {
-      console.error('Erro ao adicionar item à lista de compras:', error);
-      throw error;
+      console.error('Erro ao adicionar item:', error);
+      return false; // Erro ao adicionar item
     }
   }
 
@@ -84,6 +86,17 @@ class ShoppingListController {
       await dataBaseShoppingList.clearList();
     } catch (error) {
       console.error('Erro ao limpar lista de compras:', error);
+      throw error;
+    }
+  }
+
+  async getAllItems(userId) {
+    try {
+      // Modifique esta função para carregar apenas os itens pertencentes ao usuário
+      const items = await dataBaseShoppingList.getAllItemsByUserId(userId);
+      return items;
+    } catch (error) {
+      console.error('Erro ao obter itens da lista de compras:', error);
       throw error;
     }
   }

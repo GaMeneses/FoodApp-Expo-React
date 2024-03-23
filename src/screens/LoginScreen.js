@@ -29,7 +29,7 @@ const LoginScreen = () => {
     navigation.navigate('SignUpScreen');
   };
 
-  // Limpe o estado loginFailed ao sair da tela de login
+  // Limpa o estado loginFailed ao sair da tela de login
   useFocusEffect(
     useCallback(() => {
       return () => {

@@ -11,7 +11,7 @@ class ShoppingListDatabase {
   initDatabase() {
     db.transaction(tx => {
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS shopping_list (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, quantity INTEGER NOT NULL, purchased INTEGER DEFAULT 0)',
+        'CREATE TABLE IF NOT EXISTS shopping_list (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, quantity INTEGER NOT NULL, purchased INTEGER DEFAULT 0, user_id INTEGER NOT NULL)',
         [],
         () => {
           console.log('Tabela da lista de compras criada com sucesso.');
@@ -22,13 +22,13 @@ class ShoppingListDatabase {
       );
     });
   }
-
-  async addItem(name, quantity) {
+  
+  async addItem(userId, name, quantity) {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          'INSERT INTO shopping_list (name, quantity) VALUES (?, ?)',
-          [name, quantity],
+          'INSERT INTO shopping_list (user_id, name, quantity) VALUES (?, ?, ?)',
+          [userId, name, quantity],
           (_, { rowsAffected, insertId }) => {
             if (rowsAffected > 0) {
               resolve(insertId); // Retorna o ID do item inserido
@@ -43,6 +43,7 @@ class ShoppingListDatabase {
       });
     });
   }
+  
 
   async updateItem(id, newName, newQuantity) {
     return new Promise((resolve, reject) => {
@@ -178,6 +179,23 @@ class ShoppingListDatabase {
             } else {
               reject(new Error('Nenhum item foi removido da lista de compras.'));
             }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+  async getAllItemsByUserId(userId)  {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT * FROM shopping_list WHERE user_id = ?',
+          [userId],
+          (_, { rows }) => {
+            resolve(rows._array); // Retorna todos os itens como um array
           },
           (_, error) => {
             reject(error);
