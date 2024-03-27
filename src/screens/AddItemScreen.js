@@ -85,7 +85,8 @@ const AddItemScreen = () => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    navigation.goBack(); // Voltar para a tela anterior
+    if(isEditing)
+      navigation.goBack(); // Voltar para a tela anterior
   };
 
   return (

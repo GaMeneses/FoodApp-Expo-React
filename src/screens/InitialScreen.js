@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, SafeAreaView, Text } from 'react-native';
+import { View, FlatList, StyleSheet, SafeAreaView, Text, TextInput } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FloatingBar from '../screens/Components/FloatingBar';
 import ItemList from '../screens/Components/ItemList';
@@ -13,6 +13,8 @@ const InitialScreen = () => {
   const [shoppingList, setShoppingList] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isFocused, setIsFocused] = useState(false); // Estado para controlar se a tela está focada ou não
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredShoppingList, setFilteredShoppingList] = useState([]); // Lista filtrada para exibição
 
   // Função para obter o usuário logado
   const getCurrentUser = async () => {
@@ -35,6 +37,7 @@ const InitialScreen = () => {
           // Carregar a lista de compras com base no ID do usuário logado
           const items = await shoppController.getAllItems(currentUser.id);
           setShoppingList(items);
+          setFilteredShoppingList(items); // Inicialmente, a lista filtrada é igual à lista completa
         } else {
           console.log('Nenhum usuário logado.');
         }
@@ -62,13 +65,31 @@ const InitialScreen = () => {
     }
   }, [isFocused]);
 
+  // Função para lidar com a mudança na pesquisa
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // Filtrar a lista de compras com base na pesquisa
+    const filteredItems = shoppingList.filter(item =>
+      item.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredShoppingList(filteredItems.length > 0 ? filteredItems : shoppingList); // Se a lista filtrada estiver vazia, exiba a lista completa
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Compras</Text>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Pesquisar por descrição..."
+          onChangeText={handleSearch}
+          value={searchQuery}
+        />
+      </View>
       <View>
         <SafeAreaView>
           <FlatList
-            data={shoppingList}
+            data={filteredShoppingList}
             renderItem={({ item }) => <ItemList id={item.id} name={item.name} quantity={item.quantity} />}
             keyExtractor={(item) => item.id.toString()}
             ListHeaderComponent={
@@ -97,6 +118,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  searchContainer: {
+    marginBottom: 10,
+  },
+  searchInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingHorizontal: 10,
   },
   listHeader: {
     flexDirection: 'row',
