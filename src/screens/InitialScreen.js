@@ -1,3 +1,4 @@
+// InitialScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, SafeAreaView, Text, TextInput } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -75,6 +76,21 @@ const InitialScreen = () => {
     setFilteredShoppingList(filteredItems.length > 0 ? filteredItems : shoppingList); // Se a lista filtrada estiver vazia, exiba a lista completa
   };
 
+  const handleEditItem = (itemId) => {
+    // Implemente a lógica para editar o item com o ID fornecido
+    console.log('Editar item com ID:', itemId);
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    try {
+      await shoppController.removeItem(itemId);
+      // Recarregar a lista de compras após a exclusão
+      await loadShoppingList();
+    } catch (error) {
+      console.error('Erro ao excluir o item:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Compras</Text>
@@ -90,7 +106,15 @@ const InitialScreen = () => {
         <SafeAreaView>
           <FlatList
             data={filteredShoppingList}
-            renderItem={({ item }) => <ItemList id={item.id} name={item.name} quantity={item.quantity} />}
+            renderItem={({ item }) => (
+              <ItemList
+                id={item.id}
+                name={item.name}
+                quantity={item.quantity}
+                onDeleteItem={handleDeleteItem}
+                onEditItem={handleEditItem} // Passando a função handleEditItem
+              />
+            )}
             keyExtractor={(item) => item.id.toString()}
             ListHeaderComponent={
               <View style={styles.listHeader}>
