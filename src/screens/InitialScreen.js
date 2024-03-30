@@ -172,9 +172,10 @@ const InitialScreen = () => {
             ListFooterComponent={
               filteredShoppingList.length > 0 && (
                 <View style={styles.footer}>
-                  <Button 
+                  <Button
                     title="Remover Todos" 
-                    onPress={handleDeleteAllItems} 
+                    onPress={handleDeleteAllItems}
+                    color='#2A7F62'
                   />
                 </View>
               )
@@ -211,6 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 20,
     paddingHorizontal: 20,
+    backgroundColor: '#d8dfdd'
   },
   title: {
     fontSize: 24,
@@ -241,8 +243,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 20,
-    alignItems: 'center',
-  },
+    alignItems: 'center', 
+  }
 });
 
 export default InitialScreen;
