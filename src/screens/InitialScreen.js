@@ -1,3 +1,4 @@
+// InitialScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, SafeAreaView, Text, TextInput, Button } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -91,6 +92,26 @@ const InitialScreen = () => {
     }
   };
 
+  // Função para marcar um item como comprado
+  const handleMarkAsPurchased = async (itemId) => {
+    try {
+      await shoppController.markAsPurchased(itemId);
+      await loadShoppingList();
+    } catch (error) {
+      console.error('Erro ao marcar o item como comprado:', error);
+    }
+  };
+
+  // Função para marcar um item como não comprado
+  const handleMarkAsNotPurchased = async (itemId) => {
+    try {
+      await shoppController.markAsNotPurchased(itemId);
+      await loadShoppingList();
+    } catch (error) {
+      console.error('Erro ao marcar o item como não comprado:', error);
+    }
+  };
+
   // Função para lidar com a exclusão de todos os itens
   const handleDeleteAllItems = async () => {
     setShowModal(true);
@@ -132,8 +153,13 @@ const InitialScreen = () => {
                 id={item.id}
                 name={item.name}
                 quantity={item.quantity}
+                purchased={item.purchased}
+                isBought={item.isBought} // Passando o estado "isBought" do item
                 onDeleteItem={handleDeleteItem}
                 onEditItem={handleEditItem}
+                onMarkAsPurchased={handleMarkAsPurchased} // Passando o método para marcar como comprado
+                onMarkAsNotPurchased={handleMarkAsNotPurchased} // Passando o método para marcar como não comprado,
+                onPurchased={item.purchased ? handleMarkAsNotPurchased : handleMarkAsPurchased}
               />
             )}
             keyExtractor={(item) => item.id.toString()}
