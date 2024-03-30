@@ -1,44 +1,46 @@
-// InitialScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, SafeAreaView, Text, TextInput } from 'react-native';
+import { View, FlatList, StyleSheet, SafeAreaView, Text, TextInput, Button } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FloatingBar from '../screens/Components/FloatingBar';
 import ItemList from '../screens/Components/ItemList';
 import ShoppingListController from '../controllers/ShoppingListController';
-import AuthController from '../controllers/AuthController'; // Importe a controller AuthController
+import AuthController from '../controllers/AuthController';
+import CustomAlertModal from '../screens/Components/CustomAlert'; // Importe o modal personalizado corretamente
 
+// Instância dos controladores
 const shoppController = new ShoppingListController();
-const authController = new AuthController(); // Crie uma instância da AuthController
+const authController = new AuthController();
 
 const InitialScreen = () => {
+  // Estados
   const [shoppingList, setShoppingList] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [isFocused, setIsFocused] = useState(false); // Estado para controlar se a tela está focada ou não
+  const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredShoppingList, setFilteredShoppingList] = useState([]); // Lista filtrada para exibição
+  const [filteredShoppingList, setFilteredShoppingList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   // Função para obter o usuário logado
   const getCurrentUser = async () => {
     try {
-      const currentUser = await authController.getCurrentUser(); // Chame a função getCurrentUser da AuthController
-      return currentUser; // Retorne o usuário logado
+      const currentUser = await authController.getCurrentUser();
+      return currentUser;
     } catch (error) {
       console.error('Erro ao obter usuário logado:', error);
-      return null; // Retorne null em caso de erro
+      return null;
     }
   };
 
+  // Carregar a lista de compras
   const loadShoppingList = async () => {
     try {
-      // Obter o usuário logado apenas se a tela estiver focada
       if (isFocused) {
         const currentUser = await getCurrentUser();
         if (currentUser) {
           setUserId(currentUser.id);
-          // Carregar a lista de compras com base no ID do usuário logado
           const items = await shoppController.getAllItems(currentUser.id);
           setShoppingList(items);
-          setFilteredShoppingList(items); // Inicialmente, a lista filtrada é igual à lista completa
+          setFilteredShoppingList(items);
         } else {
           console.log('Nenhum usuário logado.');
         }
@@ -48,18 +50,17 @@ const InitialScreen = () => {
     }
   };
 
-  // Use useFocusEffect para atualizar o estado de foco da tela
+  // Efeito para atualizar o estado de foco da tela
   useFocusEffect(
     React.useCallback(() => {
       setIsFocused(true);
-
       return () => {
         setIsFocused(false);
       };
     }, [])
   );
 
-  // Carregue a lista de compras apenas quando a tela estiver focada
+  // Efeito para carregar a lista de compras quando a tela estiver focada
   useEffect(() => {
     if (isFocused) {
       loadShoppingList();
@@ -69,26 +70,46 @@ const InitialScreen = () => {
   // Função para lidar com a mudança na pesquisa
   const handleSearch = (query) => {
     setSearchQuery(query);
-    // Filtrar a lista de compras com base na pesquisa
     const filteredItems = shoppingList.filter(item =>
       item.name.toLowerCase().includes(query.toLowerCase())
     );
-    setFilteredShoppingList(filteredItems.length > 0 ? filteredItems : shoppingList); // Se a lista filtrada estiver vazia, exiba a lista completa
+    setFilteredShoppingList(filteredItems.length > 0 ? filteredItems : shoppingList);
   };
 
+  // Função para editar um item
   const handleEditItem = (itemId) => {
-    // Implemente a lógica para editar o item com o ID fornecido
     console.log('Editar item com ID:', itemId);
   };
 
+  // Função para excluir um item
   const handleDeleteItem = async (itemId) => {
     try {
       await shoppController.removeItem(itemId);
-      // Recarregar a lista de compras após a exclusão
       await loadShoppingList();
     } catch (error) {
       console.error('Erro ao excluir o item:', error);
     }
+  };
+
+  // Função para lidar com a exclusão de todos os itens
+  const handleDeleteAllItems = async () => {
+    setShowModal(true);
+  };
+
+  // Função para confirmar a exclusão de todos os itens
+  const confirmDeleteAllItems = async () => {
+    try {
+      await shoppController.clearList(userId);
+      await loadShoppingList();
+      setShowModal(false);
+    } catch (error) {
+      console.error('Erro ao excluir todos os itens:', error);
+    }
+  };
+
+  // Função para cancelar a exclusão de todos os itens
+  const cancelDeleteAllItems = () => {
+    setShowModal(false);
   };
 
   return (
@@ -112,7 +133,7 @@ const InitialScreen = () => {
                 name={item.name}
                 quantity={item.quantity}
                 onDeleteItem={handleDeleteItem}
-                onEditItem={handleEditItem} // Passando a função handleEditItem
+                onEditItem={handleEditItem}
               />
             )}
             keyExtractor={(item) => item.id.toString()}
@@ -122,10 +143,38 @@ const InitialScreen = () => {
                 <Text style={styles.columnHeader}>Quantidade</Text>
               </View>
             }
+            ListFooterComponent={
+              filteredShoppingList.length > 0 && (
+                <View style={styles.footer}>
+                  <Button 
+                    title="Remover Todos" 
+                    onPress={handleDeleteAllItems} 
+                  />
+                </View>
+              )
+            }
           />
         </SafeAreaView>
       </View>
       <FloatingBar />
+
+      <CustomAlertModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        onResult={(result) => {
+          if (result) {
+            // Se o resultado for true, o usuário confirmou
+            confirmDeleteAllItems();
+          } else {
+            // Se o resultado for false, o usuário cancelou
+            cancelDeleteAllItems();
+          }
+        }}
+        title="Confirmar Remoção"
+        message="Tem certeza que deseja remover todos os itens da lista?"
+        showCancel // Adicionado para mostrar o botão "Cancelar"
+      />
+
     </View>
   );
 };
@@ -163,6 +212,10 @@ const styles = StyleSheet.create({
   columnHeader: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  footer: {
+    marginTop: 20,
+    alignItems: 'center',
   },
 });
 
