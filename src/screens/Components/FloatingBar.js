@@ -14,6 +14,10 @@ const FloatingBar = () => {
     navigation.navigate('InitialScreen');
   };
 
+  const handleConfigPress = () => {
+    navigation.navigate('ConfigScreen');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
@@ -23,7 +27,7 @@ const FloatingBar = () => {
         <TouchableOpacity style={styles.button} onPress={handleAddItemPress}>
           <AntDesign name="plus" size={32} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleConfigPress}>
           <AntDesign name="user" size={32} color="white" />
         </TouchableOpacity>
       </View>
