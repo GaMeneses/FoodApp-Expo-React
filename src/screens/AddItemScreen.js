@@ -111,7 +111,7 @@ const AddItemScreen = () => {
           />
         </View>
       </View>
-      <Button title={isEditing ? 'Atualizar Item' : 'Adicionar Item'} onPress={handleAddItem} />
+      <Button title={isEditing ? 'Atualizar Item' : 'Adicionar Item'} onPress={handleAddItem}  color='#2A7F62'/>
       <CustomAlertModal
         visible={showSuccessModal}
         onClose={handleCloseSuccessModal}
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#d8dfdd'
   },
   title: {
     fontSize: 24,

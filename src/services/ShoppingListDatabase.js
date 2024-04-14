@@ -167,12 +167,12 @@ class ShoppingListDatabase {
     });
   }
 
-  async clearList() {
+  async clearList(userId) {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          'DELETE FROM shopping_list',
-          [],
+          'DELETE FROM shopping_list  WHERE user_id = ?',
+          [userId],
           (_, { rowsAffected }) => {
             if (rowsAffected > 0) {
               resolve(true); // Lista de compras limpa com sucesso

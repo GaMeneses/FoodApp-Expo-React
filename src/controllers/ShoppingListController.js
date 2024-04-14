@@ -81,9 +81,9 @@ class ShoppingListController {
   }
 
   // Método para limpar a lista de compras
-  async clearList() {
+  async clearList(userId) {
     try {
-      await dataBaseShoppingList.clearList();
+      await dataBaseShoppingList.clearList(userId);
     } catch (error) {
       console.error('Erro ao limpar lista de compras:', error);
       throw error;
