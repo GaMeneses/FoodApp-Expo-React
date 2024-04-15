@@ -74,7 +74,7 @@ const InitialScreen = () => {
     const filteredItems = shoppingList.filter(item =>
       item.name.toLowerCase().includes(query.toLowerCase())
     );
-    setFilteredShoppingList(filteredItems.length > 0 ? filteredItems : shoppingList);
+    setFilteredShoppingList(query.length > 0 ? filteredItems : shoppingList);
   };
 
   // Função para editar um item
