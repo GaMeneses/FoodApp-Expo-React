@@ -12,6 +12,7 @@ const CEPDisplay = ({ data }) => {
         <Text>CEP: {data.cep}</Text>
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -30,7 +31,8 @@ const styles = StyleSheet.create({
     top: 35
   },
   texto: {
-    fontSize: 16
+    fontSize: 16,
+    color: 'red'
   },
   buttonText: {
     color: '#fff',

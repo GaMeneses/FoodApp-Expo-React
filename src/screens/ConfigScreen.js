@@ -1,7 +1,7 @@
 // ItemList.js
 import React, {useState} from 'react';
 import FloatingBar from '../screens/Components/FloatingBar';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AuthController from '../controllers/AuthController';
 import axios from 'axios';
@@ -32,9 +32,21 @@ const ConfigScreen = ({ id, name, quantity }) => {
 
   const fetchCEPData = async (cep) => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      setCEPData(response.data);
-      console.log(response.data);
+      await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => {
+        // Verifica se há um campo "erro" e se é verdadeiro
+          if (response.data.erro === true) {
+            Alert.alert('CEP não existe', 'Não foi possível encontrar o CEP informado.');  
+          } else {
+            // A requisição foi bem-sucedida, você pode acessar os dados retornados
+            setCEPData(response.data);
+          }
+        })
+        .catch(error => {
+          // Se ocorrer um erro na requisição, você pode lidar com ele aqui
+          Alert.alert('CEP inválido', 'O CEP informado é inválido ou não existe.');  
+        });
+
     } catch (error) {
       console.error('Error fetching CEP data:', error);
     }
@@ -56,10 +68,10 @@ const ConfigScreen = ({ id, name, quantity }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     padding: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#d8dfdd'
   },
   logout: {
     position: 'absolute',
